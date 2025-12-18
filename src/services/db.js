@@ -2,7 +2,7 @@ import { db } from '../firebase';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy } from 'firebase/firestore';
 import { MOCK_STAFF, MOCK_RESULTS, MOCK_JACKPOT, MOCK_SETTINGS } from './mockData';
 
-const USE_MOCK = true; // Set to false when connecting to real Firebase
+const USE_MOCK = import.meta.env.VITE_USE_MOCK_DATA !== 'false';
 
 // --- Staff Services ---
 export const getStaff = async () => {

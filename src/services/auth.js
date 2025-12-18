@@ -1,7 +1,7 @@
 import { auth } from '../firebase';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 
-const USE_MOCK = true;
+const USE_MOCK = import.meta.env.VITE_USE_MOCK_DATA !== 'false';
 
 // Mock Admin User
 const MOCK_ADMIN = {
