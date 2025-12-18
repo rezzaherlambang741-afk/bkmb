@@ -1,10 +1,21 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { cn } from '../utils/cn';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { subscribeToSettings } from '../services/db';
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [promosiLink, setPromosiLink] = useState('#');
+
+  useEffect(() => {
+    const unsub = subscribeToSettings((data) => {
+      if (data && data.promosiLink) {
+        setPromosiLink(data.promosiLink);
+      }
+    });
+    return () => unsub();
+  }, []);
 
   // We use a mix of internal paths and external flags
   const navLinks = [
@@ -12,7 +23,7 @@ export default function Navbar() {
     { name: 'STAFF CS', path: '/staff', isExternal: false },
     { name: 'DATA RESULT', path: '/result', isExternal: false },
     { name: 'BUKTI JACKPOT', path: '/jackpot', isExternal: false },
-    { name: 'PROMOSI', path: 'https://google.com', isExternal: true },
+    { name: 'PROMOSI', path: promosiLink, isExternal: true },
     { name: 'KELUHAN', path: '/keluhan', isExternal: false },
     { name: 'PANDUAN', path: '/panduan', isExternal: false },
   ];

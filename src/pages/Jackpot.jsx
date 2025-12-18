@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
-import { getJackpotImages } from '../services/db';
+import { subscribeToJackpot } from '../services/db';
 
 export default function Jackpot() {
   const [images, setImages] = useState([]);
 
   useEffect(() => {
-    getJackpotImages().then(setImages);
+    const unsub = subscribeToJackpot(setImages);
+    return () => unsub();
   }, []);
 
   return (
@@ -16,7 +17,7 @@ export default function Jackpot() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {images.map((img) => (
-          <div key={img.id} className="relative group overflow-hidden rounded-lg border border-slate-700 aspect-video">
+          <div key={img.id} className="relative group overflow-hidden rounded-lg border border-slate-700 aspect-[9/16]">
             <img
               src={img.imageURL}
               alt={`Jackpot ${img.date}`}
