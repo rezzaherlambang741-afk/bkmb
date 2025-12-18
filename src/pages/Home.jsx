@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import Card from '../components/Card';
 import Button from '../components/Button';
-import { getStaff, getSettings } from '../services/db';
+import { subscribeToStaff, subscribeToSettings } from '../services/db';
 
 export default function Home() {
   const [csList, setCsList] = useState([]);
@@ -14,14 +14,16 @@ export default function Home() {
   });
 
   useEffect(() => {
-    // Load Data
-    const fetchData = async () => {
-      const staff = await getStaff();
-      const settingsData = await getSettings();
-      setCsList(staff);
-      setSettings(prev => ({ ...prev, ...settingsData }));
+    // Real-time subscriptions
+    const unsubStaff = subscribeToStaff((data) => setCsList(data));
+    const unsubSettings = subscribeToSettings((data) => {
+      setSettings(prev => ({ ...prev, ...data }));
+    });
+
+    return () => {
+      unsubStaff();
+      unsubSettings();
     };
-    fetchData();
   }, []);
 
   const handleContact = () => {

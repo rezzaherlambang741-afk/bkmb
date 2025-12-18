@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Card from '../../components/Card';
 import Button from '../../components/Button';
-import { getResults, addResult, deleteResult } from '../../services/db';
+import { subscribeToResults, addResult, deleteResult } from '../../services/db';
 
 export default function ManageResults() {
   const [results, setResults] = useState([]);
@@ -14,18 +14,16 @@ export default function ManageResults() {
   });
 
   useEffect(() => {
-    loadData();
+    const unsubscribe = subscribeToResults((data) => {
+      setResults(data);
+    });
+    return () => unsubscribe();
   }, []);
-
-  const loadData = async () => {
-    const data = await getResults();
-    setResults(data);
-  };
 
   const handleAdd = async (e) => {
     e.preventDefault();
     await addResult(formData);
-    await loadData();
+    // await loadData(); // No longer needed with subscription
     setIsModalOpen(false);
     setFormData({
       date: new Date().toISOString().split('T')[0],
@@ -38,7 +36,7 @@ export default function ManageResults() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this result?')) {
       await deleteResult(id);
-      await loadData();
+      // await loadData();
     }
   };
 

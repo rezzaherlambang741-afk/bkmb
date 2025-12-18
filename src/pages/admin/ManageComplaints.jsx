@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { getComplaints } from '../../services/db';
+import { subscribeToComplaints } from '../../services/db';
 
 export default function ManageComplaints() {
   const [complaints, setComplaints] = useState([]);
 
   useEffect(() => {
-    loadData();
+    const unsubscribe = subscribeToComplaints((data) => {
+      setComplaints(data);
+    });
+    return () => unsubscribe();
   }, []);
-
-  const loadData = async () => {
-    const data = await getComplaints();
-    setComplaints(data);
-  };
 
   return (
     <div>
