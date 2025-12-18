@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Card from '../../components/Card';
 import Button from '../../components/Button';
-import { getStaff, addStaff } from '../../services/db'; // In real app, import delete/update too
+import { getStaff, addStaff, deleteStaff } from '../../services/db';
 
 export default function ManageStaff() {
   const [staff, setStaff] = useState([]);
@@ -15,15 +15,27 @@ export default function ManageStaff() {
   });
 
   useEffect(() => {
-    getStaff().then(setStaff);
+    loadData();
   }, []);
+
+  const loadData = async () => {
+    const data = await getStaff();
+    setStaff(data);
+  };
 
   const handleAdd = async (e) => {
     e.preventDefault();
     await addStaff(formData);
-    setStaff(await getStaff());
+    await loadData();
     setIsModalOpen(false);
     setFormData({ ...formData, name: '', waNumber: '' });
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this staff member?')) {
+      await deleteStaff(id);
+      await loadData();
+    }
   };
 
   return (
@@ -56,8 +68,14 @@ export default function ManageStaff() {
                    </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  {/* Edit functionality omitted for brevity, focusing on Delete per plan */}
                   <button className="text-primary hover:text-blue-400 mr-3">Edit</button>
-                  <button className="text-red-500 hover:text-red-400">Delete</button>
+                  <button
+                    onClick={() => handleDelete(s.id)}
+                    className="text-red-500 hover:text-red-400"
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}

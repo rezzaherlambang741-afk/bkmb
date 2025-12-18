@@ -21,12 +21,39 @@ export const addStaff = async (staffData) => {
   return await addDoc(collection(db, 'customer_service'), staffData);
 };
 
+export const deleteStaff = async (id) => {
+  if (USE_MOCK) {
+    const index = MOCK_STAFF.findIndex(s => s.id === id);
+    if (index !== -1) MOCK_STAFF.splice(index, 1);
+    return true;
+  }
+  return await deleteDoc(doc(db, 'customer_service', id));
+};
+
 // --- Result Services ---
 export const getResults = async () => {
   if (USE_MOCK) return MOCK_RESULTS;
   const q = query(collection(db, 'results'), orderBy('date', 'desc'));
   const snapshot = await getDocs(q);
   return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
+
+export const addResult = async (resultData) => {
+  if (USE_MOCK) {
+    const newResult = { id: Date.now().toString(), ...resultData };
+    MOCK_RESULTS.unshift(newResult);
+    return newResult;
+  }
+  return await addDoc(collection(db, 'results'), resultData);
+};
+
+export const deleteResult = async (id) => {
+  if (USE_MOCK) {
+    const index = MOCK_RESULTS.findIndex(r => r.id === id);
+    if (index !== -1) MOCK_RESULTS.splice(index, 1);
+    return true;
+  }
+  return await deleteDoc(doc(db, 'results', id));
 };
 
 // --- Jackpot Services ---
@@ -48,11 +75,23 @@ export const getSettings = async () => {
 // --- Complaint Services ---
 export const submitComplaint = async (complaintData) => {
   if (USE_MOCK) {
-    console.log("Mock complaint submitted:", complaintData);
+    // In mock mode, we'll store it in a temporary array attached to window for session testing
+    // or just log it. Let's add a MOCK_COMPLAINTS array if needed.
+    if (!window.MOCK_COMPLAINTS) window.MOCK_COMPLAINTS = [];
+    window.MOCK_COMPLAINTS.push({ id: Date.now().toString(), ...complaintData, createdAt: new Date().toISOString() });
     return true;
   }
   return await addDoc(collection(db, 'complaints'), {
     ...complaintData,
     createdAt: new Date().toISOString()
   });
+};
+
+export const getComplaints = async () => {
+  if (USE_MOCK) {
+    return window.MOCK_COMPLAINTS || [];
+  }
+  const q = query(collection(db, 'complaints'), orderBy('createdAt', 'desc'));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };

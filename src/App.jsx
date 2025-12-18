@@ -15,6 +15,8 @@ import Login from './pages/admin/Login';
 import AdminLayout from './pages/admin/AdminLayout';
 import Dashboard from './pages/admin/Dashboard';
 import ManageStaff from './pages/admin/ManageStaff';
+import ManageResults from './pages/admin/ManageResults';
+import ManageComplaints from './pages/admin/ManageComplaints';
 
 function App() {
   return (
@@ -34,7 +36,8 @@ function App() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="staff" element={<ManageStaff />} />
-            <Route path="results" element={<div className="text-white">Manage Results (Coming Soon)</div>} />
+            <Route path="results" element={<ManageResults />} />
+            <Route path="complaints" element={<ManageComplaints />} />
             <Route path="jackpot" element={<div className="text-white">Manage Jackpot (Coming Soon)</div>} />
             <Route path="settings" element={<div className="text-white">Settings (Coming Soon)</div>} />
           </Route>
